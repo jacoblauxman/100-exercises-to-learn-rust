@@ -8,6 +8,55 @@ enum Status {
     Done,
 }
 
+#[derive(Debug, thiserror::Error)]
+#[error("{} is not a valid status", status)]
+struct ParseStatusError {
+    status: String,
+}
+
+// or without `thiserror`:
+
+// #[derive(Debug)]
+// struct ParseStatusError {
+//     status: String,
+// }
+
+// impl std::fmt::Display for ParseStatusError {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         write!(f, "{} is not a valid status", self.status)
+//     }
+// }
+
+impl TryFrom<&str> for Status {
+    type Error = ParseStatusError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value.to_lowercase().as_str() {
+            "todo" => Ok(Status::ToDo),
+            "inprogress" => Ok(Status::InProgress),
+            "done" => Ok(Status::Done),
+            // _ => Self::Error,
+            _ => Err(ParseStatusError {
+                status: value.to_string(),
+            }),
+        }
+    }
+}
+
+impl TryFrom<String> for Status {
+    type Error = ParseStatusError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.to_lowercase().as_str() {
+            "todo" => Ok(Status::ToDo),
+            "inprogress" => Ok(Status::InProgress),
+            "done" => Ok(Status::Done),
+            // _ => Self::Error,
+            _ => Err(ParseStatusError { status: value }),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

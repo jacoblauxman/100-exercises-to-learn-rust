@@ -7,15 +7,34 @@
 struct Ticket {
     title: String,
     description: String,
-    status: String,
+    // status: String,
+    status: Status,
 }
 
+//
+#[derive(Debug, PartialEq, Clone, Copy)] // adding `Clone, Copy` appears to work but also raises issues re: associated items??
+                                         //
 enum Status {
     // TODO: add the missing variants
+    ToDo,
+    InProgress,
+    Done,
 }
 
+// impl From<&String> for Status {
+//     fn from(status: &String) -> Self {
+//         match status.as_str() {
+//             "To-Do" => Status::ToDo,
+//             "In Progress" => Status::InProgress,
+//             "Done" => Status::Done,
+//             _ => panic!("Only `To-Do`, `In Progress`, and `Done` statuses are allowed"),
+//         }
+//     }
+// }
+
 impl Ticket {
-    pub fn new(title: String, description: String, status: String) -> Ticket {
+    // pub fn new(title: String, description: String, status: String) -> Ticket {
+    pub fn new(title: String, description: String, status: Status) -> Ticket {
         if title.is_empty() {
             panic!("Title cannot be empty");
         }
@@ -28,9 +47,11 @@ impl Ticket {
         if description.len() > 500 {
             panic!("Description cannot be longer than 500 characters");
         }
-        if status != "To-Do" && status != "In Progress" && status != "Done" {
-            panic!("Only `To-Do`, `In Progress`, and `Done` statuses are allowed");
-        }
+        // if status != "To-Do" && status != "In Progress" && status != "Done" {
+        //     panic!("Only `To-Do`, `In Progress`, and `Done` statuses are allowed");
+        // }
+
+        // let status: Status = (&status).into(); // should handle error
 
         Ticket {
             title,
@@ -47,7 +68,17 @@ impl Ticket {
         &self.description
     }
 
-    pub fn status(&self) -> &String {
+    // pub fn status(&self) -> &String {
+    // pub fn status(&self) -> &str {
+    pub fn status(&self) -> &Status {
+        // &self.status
+        //
+        // match &self.status {
+        //     Status::ToDo => &"To-Do",
+        //     Status::InProgress => &"In Progress",
+        //     Status::Done => &"Done",
+        // }
+        //
         &self.status
     }
 }

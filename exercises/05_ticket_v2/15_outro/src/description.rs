@@ -2,7 +2,65 @@
 //   enforcing that the description is not empty and is not longer than 500 characters.
 //   Implement the traits required to make the tests pass too.
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TicketDescription(String);
+
+#[derive(thiserror::Error, Debug)]
+pub enum TicketDescriptionError {
+    #[error("The description cannot be empty")]
+    DescriptionEmpty,
+    #[error("The description cannot be longer than 500 characters")]
+    DescriptionTooLong,
+}
+
+// without `thiserror`
+
+// #[derive(Debug)]
+// pub enum TicketDescriptionError {
+//     DescriptionEmpty,
+//     DescriptionTooLong,
+// }
+
+// impl std::fmt::Display for TicketDescriptionError {
+//     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+//         match self {
+//             TicketDescriptionError::DescriptionEmpty => {
+//                 write!(f, "The description cannot be empty")
+//             }
+//             TicketDescriptionError::DescriptionTooLong => {
+//                 write!(f, "The description cannot be longer than 500 characters")
+//             }
+//         }
+//     }
+// }
+
+impl TryFrom<String> for TicketDescription {
+    type Error = TicketDescriptionError;
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        validate_description(&value)?;
+
+        Ok(TicketDescription(value))
+    }
+}
+
+impl TryFrom<&str> for TicketDescription {
+    type Error = TicketDescriptionError;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        validate_description(value)?;
+
+        Ok(TicketDescription(value.to_string()))
+    }
+}
+
+fn validate_description(desc: &str) -> Result<(), TicketDescriptionError> {
+    match desc {
+        "" => Err(TicketDescriptionError::DescriptionEmpty),
+        desc if desc.len() > 500 => Err(TicketDescriptionError::DescriptionTooLong),
+        _ => Ok(()),
+    }
+}
 
 #[cfg(test)]
 mod tests {
