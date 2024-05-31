@@ -13,7 +13,8 @@ pub struct TicketStore {
     counter: u64,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+// #[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct TicketId(u64);
 
 #[derive(Clone, Debug, PartialEq)]
@@ -40,7 +41,8 @@ pub enum Status {
 impl TicketStore {
     pub fn new() -> Self {
         Self {
-            tickets: todo!(),
+            // tickets: todo!(),
+            tickets: BTreeMap::new(),
             counter: 0,
         }
     }
@@ -54,16 +56,20 @@ impl TicketStore {
             description: ticket.description,
             status: Status::ToDo,
         };
-        todo!();
+        // todo!();
+        self.tickets.insert(id, ticket);
+        //
         id
     }
 
     pub fn get(&self, id: TicketId) -> Option<&Ticket> {
-        todo!()
+        // todo!()
+        self.tickets.get(&id)
     }
 
     pub fn get_mut(&mut self, id: TicketId) -> Option<&mut Ticket> {
-        todo!()
+        // todo!()
+        self.tickets.get_mut(&id)
     }
 }
 
@@ -94,6 +100,21 @@ impl IndexMut<&TicketId> for TicketStore {
         &mut self[*index]
     }
 }
+
+//
+impl<'a> IntoIterator for &'a TicketStore {
+    type Item = &'a Ticket;
+
+    // type IntoIter = std::collections::btree_map::Iter<'a, TicketId, Ticket>; // not quite right - yields `(&TicketId, &Ticket)` for iteration?
+    type IntoIter = std::collections::btree_map::Values<'a, TicketId, Ticket>;
+    // we need to access the `Values` struct within the `btree_map` mod
+    // -> gets the proper typing for what `self.tickets` can return as an iterator of the BTreeMap vals (sig is 'lifetime', 'key', 'value')
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.tickets.values()
+    }
+}
+//
 
 #[cfg(test)]
 mod tests {

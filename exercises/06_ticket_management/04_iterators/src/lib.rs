@@ -36,6 +36,15 @@ impl TicketStore {
     }
 }
 
+impl IntoIterator for TicketStore {
+    type Item = Ticket;
+    // type IntoIter: Iterator<Item = Self::Item> = std::vec::IntoIter<Self::Item>; // "bounds on `type`s in `impl`s have no effect"
+    type IntoIter = std::vec::IntoIter<Self::Item>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.tickets.into_iter()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
