@@ -107,8 +107,6 @@ impl<'a> IntoIterator for &'a TicketStore {
 
     // type IntoIter = std::collections::btree_map::Iter<'a, TicketId, Ticket>; // not quite right - yields `(&TicketId, &Ticket)` for iteration?
     type IntoIter = std::collections::btree_map::Values<'a, TicketId, Ticket>;
-    // we need to access the `Values` struct within the `btree_map` mod
-    // -> gets the proper typing for what `self.tickets` can return as an iterator of the BTreeMap vals (sig is 'lifetime', 'key', 'value')
 
     fn into_iter(self) -> Self::IntoIter {
         self.tickets.values()
@@ -127,7 +125,7 @@ mod tests {
 
         let n_tickets = 5;
 
-        for i in 0..n_tickets {
+        for _i in 0..n_tickets {
             let draft = TicketDraft {
                 title: ticket_title(),
                 description: ticket_description(),
